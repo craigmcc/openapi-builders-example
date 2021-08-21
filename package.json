@@ -1,0 +1,37 @@
+{
+  "name": "@craigmcc/openapi-builders-example",
+  "version": "1.0.0",
+  "description": "Example application for @craigmcc/openapi-builders module.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch --preserveWatchOutput",
+    "execute": "node dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tsc": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/craigmcc/openapi-builders-example.git"
+  },
+  "keywords": [
+    "openapi",
+    "open-api",
+    "typescript",
+    "openapi-builders"
+  ],
+  "author": "craigmcc",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/craigmcc/openapi-builders-example/issues"
+  },
+  "homepage": "https://github.com/craigmcc/openapi-builders-example#readme",
+  "devDependencies": {
+    "@types/node": "^16.7.1",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.3.5"
+  },
+  "dependencies": {
+    "node": "^16.6.1"
+  }
+}
