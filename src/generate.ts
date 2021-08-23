@@ -154,11 +154,6 @@ const modelOperationAll = (model: string): ob.OperationObject => {
 const modelOperationFind = (model: string): ob.OperationObject => {
     return new ob.OperationObjectBuilder()
         .addDescription(`Return the specified ${model}`)
-/*
-        .addParameter(new ob.ParameterObjectBuilder("path", modelId(model))
-            // TODO            .addDescription(`ID of the specified ${model}`)
-            .build())
-*/
         .addResponse(STATUS_OK, new ob.ResponseObjectBuilder(`The specified ${model}`)
             .addContent(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
                 .addSchema(modelSchemaRef(model))
@@ -195,11 +190,6 @@ const modelOperationInsert = (model: string): ob.OperationObject => {
 const modelOperationRemove = (model: string): ob.OperationObject => {
     return new ob.OperationObjectBuilder()
         .addDescription(`Delete and return the specified ${model}`)
-/*
-        .addParameter(new ob.ParameterObjectBuilder("path", modelId(model))
-            // TODO            .addDescription(`ID of the specified ${model}`)
-            .build())
-*/
         .addResponse(STATUS_OK, new ob.ResponseObjectBuilder(`The specified ${model}`)
             .addContent(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
                 .addSchema(modelSchemaRef(model))
@@ -215,11 +205,6 @@ const modelOperationRemove = (model: string): ob.OperationObject => {
 const modelOperationUpdate = (model: string): ob.OperationObject => {
     return new ob.OperationObjectBuilder()
         .addDescription(`Update and return the specified ${model}`)
-/*
-        .addParameter(new ob.ParameterObjectBuilder("path", modelId(model))
-            // TODO            .addDescription(`ID of the specified ${model}`)
-            .build())
-*/
         .addRequestBody(new ob.RequestBodyObjectBuilder()
             .addContent(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
                 .addSchema(modelSchemaRef(model))
@@ -250,7 +235,7 @@ const modelPathItemChild = (model: string): ob.PathItemObject => {
         .addDelete(modelOperationRemove(model))
         .addGet(modelOperationFind(model))
         .addParameter(new ob.ParameterObjectBuilder("path", modelId(model))
-            // TODO .addDescription(`ID of the specified ${model}`)
+            .addDescription(`ID of the specified ${model}`)
             .build())
         .addPut(modelOperationUpdate(model));
     ;
