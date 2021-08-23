@@ -15,6 +15,8 @@ const API_PREFIX = "/api";
 const ERROR_SCHEMA = "GenericError";
 const MEDIA_TYPE = "application/json";
 const POSTING_MODEL = "Posting";
+const QUERY_LIMIT = "limit";
+const QUERY_OFFSET = "offset";
 const STATUS_CREATED = "201";
 const STATUS_BAD_REQUEST = "400";
 const STATUS_FORBIDDEN = "403";
@@ -57,6 +59,7 @@ export default function generate(): string {
 
 const components = (): ob.ComponentsObject => {
     const builder = new ob.ComponentsObjectBuilder()
+        .addParameters(queryParameters())
         .addResponses(errorResponses())
         .addSchemas(errorSchemas())
         .addSchemas(modelSchemas())
@@ -138,6 +141,8 @@ const modelOperationAll = (model: string): ob.OperationObject => {
     const pluralModel = pluralize(model);
     return new ob.OperationObjectBuilder()
         .addDescription(`Return all visible ${pluralModel}`)
+        .addParameter(queryRef(QUERY_LIMIT))
+        .addParameter(queryRef(QUERY_OFFSET))
         .addResponse(STATUS_OK, new ob.ResponseObjectBuilder(`All selected ${pluralModel}`)
             .addContent(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
                 .addSchema(new ob.SchemaObjectBuilder()
@@ -156,6 +161,8 @@ const modelOperationChildren = (parent: string, child: string): ob.OperationObje
     const pluralChild = pluralize(child);
     return new ob.OperationObjectBuilder()
         .addDescription(`Return all ${pluralChild} for the specified ${parent}`)
+        .addParameter(queryRef(QUERY_LIMIT))
+        .addParameter(queryRef(QUERY_OFFSET))
         .addResponse(STATUS_OK, new ob.ResponseObjectBuilder(`All child ${pluralChild}`)
             .addContent(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
                 .addSchema(new ob.SchemaObjectBuilder()
@@ -329,6 +336,22 @@ const postingSchema = (): ob.SchemaObject => {
             .build())
         .addProperty("posting", new ob.SchemaObjectBuilder("string", "Blog Post content", false)
             .build())
+        .build();
+}
+
+const queryParameters = (): ob.ParametersObject => {
+    const parameters: ob.ParametersObject = {};
+    parameters[QUERY_LIMIT] = new ob.ParameterObjectBuilder("query", QUERY_LIMIT)
+        .addDescription("Maximum number of rows returned (default is 25)")
+        .build();
+    parameters[QUERY_OFFSET] = new ob.ParameterObjectBuilder("query", QUERY_OFFSET)
+        .addDescription("Zero-relative offset to the first returned row (default is 0)")
+        .build();
+    return parameters;
+}
+
+const queryRef = (query: string): ob.ReferenceObject => {
+    return new ob.ReferenceObjectBuilder(`#/components/parameters/${query}`)
         .build();
 }
 
