@@ -6,7 +6,8 @@
 // External Modules ----------------------------------------------------------
 
 const pluralize = require("pluralize");
-import * as ob from "@craigmcc/openapi-builders/dist/3.0";
+//import * as ob from "@craigmcc/openapi-builders/dist/3.0";
+import * as ob from "@craigmcc/openapi-builders";
 
 // Configuration Constants ---------------------------------------------------
 
@@ -150,6 +151,25 @@ const modelOperationAll = (model: string): ob.OperationObject => {
         .build();
 }
 
+// Return an operation that returns an array of the specified model objects
+const modelOperationChildren = (parent: string, child: string): ob.OperationObject => {
+    const pluralChild = pluralize(child);
+    return new ob.OperationObjectBuilder()
+        .addDescription(`Return all ${pluralChild} for the specified ${parent}`)
+        .addResponse(STATUS_OK, new ob.ResponseObjectBuilder(`All child ${pluralChild}`)
+            .addContent(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
+                .addSchema(new ob.SchemaObjectBuilder()
+                    .addItems(modelSchemaRef(child))
+                    .addType("array")
+                    .build())
+                .build())
+            .build())
+        .addResponse(STATUS_FORBIDDEN, errorResponseRef(STATUS_FORBIDDEN))
+        .addResponse(STATUS_NOT_FOUND, errorResponseRef(STATUS_NOT_FOUND))
+        .addSummary(`The requested ${pluralChild}`)
+        .build();
+}
+
 // Return an operation that returns the specified model object
 const modelOperationFind = (model: string): ob.OperationObject => {
     return new ob.OperationObjectBuilder()
@@ -226,10 +246,6 @@ const modelParameter = (model: String): string => {
     return "{" + modelId(model) + "}";
 }
 
-const modelPrefix = (model: String): string => {
-    return "/" + pluralize(model.toLowerCase());
-}
-
 const modelPathItemChild = (model: string): ob.PathItemObject => {
     const builder = new ob.PathItemObjectBuilder()
         .addDelete(modelOperationRemove(model))
@@ -238,6 +254,16 @@ const modelPathItemChild = (model: string): ob.PathItemObject => {
             .addDescription(`ID of the specified ${model}`)
             .build())
         .addPut(modelOperationUpdate(model));
+    ;
+    return builder.build();
+}
+
+const modelPathItemChildren = (parent: string, child: string): ob.PathItemObject => {
+    const builder = new ob.PathItemObjectBuilder()
+        .addGet(modelOperationChildren(parent, child))
+        .addParameter(new ob.ParameterObjectBuilder("path", modelId(parent))
+            .addDescription(`ID of the specified ${parent}`)
+            .build())
     ;
     return builder.build();
 }
@@ -252,15 +278,26 @@ const modelPathItemParent = (model: string): ob.PathItemObject => {
 
 const modelPathItems = (): ob.PathsObject => {
     const pathItems: ob.PathsObject = {}
+
+    // Posting path items
     pathItems[API_PREFIX + modelPrefix(POSTING_MODEL)]
         = modelPathItemParent(POSTING_MODEL);
     pathItems[API_PREFIX + modelPrefix(POSTING_MODEL) + "/" + modelParameter(POSTING_MODEL)]
         = modelPathItemChild(POSTING_MODEL);
+
+    // User path items
     pathItems[API_PREFIX + modelPrefix(USER_MODEL)]
         = modelPathItemParent(USER_MODEL);
     pathItems[API_PREFIX + modelPrefix(USER_MODEL) + "/" + modelParameter(USER_MODEL)]
         = modelPathItemChild(USER_MODEL);
+    pathItems[API_PREFIX + modelPrefix(USER_MODEL) + "/" + modelParameter(USER_MODEL) + modelPrefix(POSTING_MODEL)]
+        = modelPathItemChildren(USER_MODEL, POSTING_MODEL);
+
     return pathItems;
+}
+
+const modelPrefix = (model: String): string => {
+    return "/" + pluralize(model.toLowerCase());
 }
 
 const modelSchemaRef = (model: string): ob.ReferenceObject => {
