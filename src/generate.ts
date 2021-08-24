@@ -60,7 +60,9 @@ export default function generate(): string {
 const components = (): ob.ComponentsObject => {
     const builder = new ob.ComponentsObjectBuilder()
         .addParameters(queryParameters())
+        .addRequestBodies(modelRequestBodies())
         .addResponses(errorResponses())
+        .addResponses(modelResponses())
         .addSchemas(errorSchemas())
         .addSchemas(modelSchemas())
     ;
@@ -73,7 +75,7 @@ const contactBuilder = (): ob.ContactObjectBuilder => {
         .addName("Fred Flintstone");
 }
 
-const errorGenericResponse = (description: string): ob.ResponseObject => {
+const errorResponse = (description: string): ob.ResponseObject => {
     return new ob.ResponseObjectBuilder(description)
         .addContent(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
             .addExample({
@@ -84,15 +86,15 @@ const errorGenericResponse = (description: string): ob.ResponseObject => {
                     status: 404,
                 }
             })
-            .addSchema(errorSchemaRef()))
+            .addSchema(schemaRef(ERROR_SCHEMA)))
         .build();
 }
 
 const errorResponses = (): ob.ResponsesObject => {
     const responses: ob.ResponsesObject = {};
-    responses[STATUS_BAD_REQUEST] = errorGenericResponse("Error in request properties");
-    responses[STATUS_FORBIDDEN] = errorGenericResponse("Requested operation is forbidden");
-    responses[STATUS_NOT_FOUND] = errorGenericResponse("Requested item is not found");
+    responses[STATUS_BAD_REQUEST] = errorResponse("Error in request properties");
+    responses[STATUS_FORBIDDEN] = errorResponse("Requested operation is forbidden");
+    responses[STATUS_NOT_FOUND] = errorResponse("Requested item is not found");
     return responses;
 }
 
@@ -116,16 +118,6 @@ const errorSchema = (): ob.SchemaObject => {
         .build();
 }
 
-const errorResponseRef = (statusCode: string): ob.ReferenceObject => {
-    return new ob.ReferenceObjectBuilder(`#/components/responses/${statusCode}`)
-        .build();
-}
-
-const errorSchemaRef = (): ob.ReferenceObject => {
-    return new ob.ReferenceObjectBuilder(`#/components/schemas/${ERROR_SCHEMA}`)
-        .build();
-}
-
 const errorSchemas = (): ob.SchemasObject => {
     const schemas: ob.SchemasObject = {};
     schemas[ERROR_SCHEMA] = errorSchema();
@@ -141,17 +133,10 @@ const modelOperationAll = (model: string): ob.OperationObject => {
     const pluralModel = pluralize(model);
     return new ob.OperationObjectBuilder()
         .addDescription(`Return all visible ${pluralModel}`)
-        .addParameter(queryRef(QUERY_LIMIT))
-        .addParameter(queryRef(QUERY_OFFSET))
-        .addResponse(STATUS_OK, new ob.ResponseObjectBuilder(`All selected ${pluralModel}`)
-            .addContent(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
-                .addSchema(new ob.SchemaObjectBuilder()
-                    .addItems(modelSchemaRef(model))
-                    .addType("array")
-                    .build())
-                .build())
-            .build())
-        .addResponse(STATUS_FORBIDDEN, errorResponseRef(STATUS_FORBIDDEN))
+        .addParameter(parameterRef(QUERY_LIMIT))
+        .addParameter(parameterRef(QUERY_OFFSET))
+        .addResponse(STATUS_OK, responseRef(pluralize(model)))
+        .addResponse(STATUS_FORBIDDEN, responseRef(STATUS_FORBIDDEN))
         .addSummary(`The requested ${pluralModel}`)
         .build();
 }
@@ -161,18 +146,11 @@ const modelOperationChildren = (parent: string, child: string): ob.OperationObje
     const pluralChild = pluralize(child);
     return new ob.OperationObjectBuilder()
         .addDescription(`Return all ${pluralChild} for the specified ${parent}`)
-        .addParameter(queryRef(QUERY_LIMIT))
-        .addParameter(queryRef(QUERY_OFFSET))
-        .addResponse(STATUS_OK, new ob.ResponseObjectBuilder(`All child ${pluralChild}`)
-            .addContent(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
-                .addSchema(new ob.SchemaObjectBuilder()
-                    .addItems(modelSchemaRef(child))
-                    .addType("array")
-                    .build())
-                .build())
-            .build())
-        .addResponse(STATUS_FORBIDDEN, errorResponseRef(STATUS_FORBIDDEN))
-        .addResponse(STATUS_NOT_FOUND, errorResponseRef(STATUS_NOT_FOUND))
+        .addParameter(parameterRef(QUERY_LIMIT))
+        .addParameter(parameterRef(QUERY_OFFSET))
+        .addResponse(STATUS_OK, responseRef(pluralize(child)))
+        .addResponse(STATUS_FORBIDDEN, responseRef(STATUS_FORBIDDEN))
+        .addResponse(STATUS_NOT_FOUND, responseRef(STATUS_NOT_FOUND))
         .addSummary(`The requested ${pluralChild}`)
         .build();
 }
@@ -181,13 +159,9 @@ const modelOperationChildren = (parent: string, child: string): ob.OperationObje
 const modelOperationFind = (model: string): ob.OperationObject => {
     return new ob.OperationObjectBuilder()
         .addDescription(`Return the specified ${model}`)
-        .addResponse(STATUS_OK, new ob.ResponseObjectBuilder(`The specified ${model}`)
-            .addContent(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
-                .addSchema(modelSchemaRef(model))
-                .build())
-            .build())
-        .addResponse(STATUS_FORBIDDEN, errorResponseRef(STATUS_FORBIDDEN))
-        .addResponse(STATUS_NOT_FOUND, errorResponseRef(STATUS_NOT_FOUND))
+        .addResponse(STATUS_OK, responseRef(model))
+        .addResponse(STATUS_FORBIDDEN, responseRef(STATUS_FORBIDDEN))
+        .addResponse(STATUS_NOT_FOUND, responseRef(STATUS_NOT_FOUND))
         .addSummary(`The specified ${model}`)
         .build();
 }
@@ -196,19 +170,10 @@ const modelOperationFind = (model: string): ob.OperationObject => {
 const modelOperationInsert = (model: string): ob.OperationObject => {
     return new ob.OperationObjectBuilder()
         .addDescription(`Create and return the specified ${model}`)
-        .addRequestBody(new ob.RequestBodyObjectBuilder()
-            .addContent(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
-                .addSchema(modelSchemaRef(model))
-                .build())
-            .addRequired(true)
-            .build())
-        .addResponse(STATUS_CREATED, new ob.ResponseObjectBuilder(`The specified ${model}`)
-            .addContent(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
-                .addSchema(modelSchemaRef(model))
-                .build())
-            .build())
-        .addResponse(STATUS_FORBIDDEN, errorResponseRef(STATUS_FORBIDDEN))
-        .addResponse(STATUS_NOT_FOUND, errorResponseRef(STATUS_NOT_FOUND))
+        .addRequestBody(requestBodyRef(model))
+        .addResponse(STATUS_CREATED, responseRef(model))
+        .addResponse(STATUS_FORBIDDEN, responseRef(STATUS_FORBIDDEN))
+        .addResponse(STATUS_NOT_FOUND, responseRef(STATUS_NOT_FOUND))
         .addSummary(`Created ${model}`)
         .build();
 }
@@ -217,13 +182,9 @@ const modelOperationInsert = (model: string): ob.OperationObject => {
 const modelOperationRemove = (model: string): ob.OperationObject => {
     return new ob.OperationObjectBuilder()
         .addDescription(`Delete and return the specified ${model}`)
-        .addResponse(STATUS_OK, new ob.ResponseObjectBuilder(`The specified ${model}`)
-            .addContent(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
-                .addSchema(modelSchemaRef(model))
-                .build())
-            .build())
-        .addResponse(STATUS_FORBIDDEN, errorResponseRef(STATUS_FORBIDDEN))
-        .addResponse(STATUS_NOT_FOUND, errorResponseRef(STATUS_NOT_FOUND))
+        .addResponse(STATUS_OK, responseRef(model))
+        .addResponse(STATUS_FORBIDDEN, responseRef(STATUS_FORBIDDEN))
+        .addResponse(STATUS_NOT_FOUND, responseRef(STATUS_NOT_FOUND))
         .addSummary(`Deleted ${model}`)
         .build();
 }
@@ -232,19 +193,10 @@ const modelOperationRemove = (model: string): ob.OperationObject => {
 const modelOperationUpdate = (model: string): ob.OperationObject => {
     return new ob.OperationObjectBuilder()
         .addDescription(`Update and return the specified ${model}`)
-        .addRequestBody(new ob.RequestBodyObjectBuilder()
-            .addContent(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
-                .addSchema(modelSchemaRef(model))
-                .build())
-            .addRequired(true)
-            .build())
-        .addResponse(STATUS_OK, new ob.ResponseObjectBuilder(`The specified ${model}`)
-            .addContent(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
-                .addSchema(modelSchemaRef(model))
-                .build())
-            .build())
-        .addResponse(STATUS_FORBIDDEN, errorResponseRef(STATUS_FORBIDDEN))
-        .addResponse(STATUS_NOT_FOUND, errorResponseRef(STATUS_NOT_FOUND))
+        .addRequestBody(requestBodyRef(model))
+        .addResponse(STATUS_OK, responseRef(model))
+        .addResponse(STATUS_FORBIDDEN, responseRef(STATUS_FORBIDDEN))
+        .addResponse(STATUS_NOT_FOUND, responseRef(STATUS_NOT_FOUND))
         .addSummary(`Updated ${model}`)
         .build();
 }
@@ -260,7 +212,7 @@ const modelPathItemChild = (model: string): ob.PathItemObject => {
         .addParameter(new ob.ParameterObjectBuilder("path", modelId(model))
             .addDescription(`ID of the specified ${model}`)
             .build())
-        .addPut(modelOperationUpdate(model));
+        .addPut(modelOperationUpdate(model))
     ;
     return builder.build();
 }
@@ -307,9 +259,52 @@ const modelPrefix = (model: String): string => {
     return "/" + pluralize(model.toLowerCase());
 }
 
-const modelSchemaRef = (model: string): ob.ReferenceObject => {
-    return new ob.ReferenceObjectBuilder(`#/components/schemas/${model}`)
+const modelRequestBodies = (): ob.RequestBodiesObject => {
+    const requestBodies : ob.RequestBodiesObject = {};
+    requestBodies[POSTING_MODEL] = new ob.RequestBodyObjectBuilder()
+        .addContent(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
+            .addSchema(schemaRef(POSTING_MODEL))
+            .build())
+        .addRequired(true)
         .build();
+    requestBodies[USER_MODEL] = new ob.RequestBodyObjectBuilder()
+        .addContent(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
+            .addSchema(schemaRef(POSTING_MODEL))
+            .build())
+        .addRequired(true)
+        .build();
+    return requestBodies;
+}
+
+const modelResponses = (): ob.ResponsesObject => {
+    const modelResponses: ob.ResponsesObject = {};
+    modelResponses[POSTING_MODEL] = new ob.ResponseObjectBuilder(`The specified ${POSTING_MODEL}`)
+        .addContent(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
+            .addSchema(schemaRef(POSTING_MODEL))
+            .build())
+        .build();
+    modelResponses[pluralize(POSTING_MODEL)] = new ob.ResponseObjectBuilder(`The requested ${pluralize(POSTING_MODEL)}`)
+        .addContent(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
+            .addSchema(new ob.SchemaObjectBuilder()
+                .addItems(schemaRef(POSTING_MODEL))
+                .addType("array")
+                .build())
+            .build())
+        .build();
+    modelResponses[USER_MODEL] = new ob.ResponseObjectBuilder(`The specified ${USER_MODEL}`)
+        .addContent(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
+            .addSchema(schemaRef(USER_MODEL))
+            .build())
+        .build();
+    modelResponses[pluralize(USER_MODEL)] = new ob.ResponseObjectBuilder(`The requested ${pluralize(USER_MODEL)}`)
+        .addContent(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
+            .addSchema(new ob.SchemaObjectBuilder()
+                .addItems(schemaRef(USER_MODEL))
+                .addType("array")
+                .build())
+            .build())
+        .build();
+    return modelResponses;
 }
 
 const modelSchemas = (): ob.SchemasObject => {
@@ -317,6 +312,11 @@ const modelSchemas = (): ob.SchemasObject => {
     schemas[POSTING_MODEL] = postingSchema();
     schemas[USER_MODEL] = userSchema();
     return schemas;
+}
+
+const parameterRef = (query: string): ob.ReferenceObject => {
+    return new ob.ReferenceObjectBuilder(`#/components/parameters/${query}`)
+        .build();
 }
 
 const postingSchema = (): ob.SchemaObject => {
@@ -350,8 +350,18 @@ const queryParameters = (): ob.ParametersObject => {
     return parameters;
 }
 
-const queryRef = (query: string): ob.ReferenceObject => {
-    return new ob.ReferenceObjectBuilder(`#/components/parameters/${query}`)
+const requestBodyRef = (requestBody: string): ob.ReferenceObject => {
+    return new ob.ReferenceObjectBuilder(`#/components/requestBodies/${requestBody}`)
+        .build();
+}
+
+const responseRef = (response: string): ob.ReferenceObject => {
+    return new ob.ReferenceObjectBuilder(`#/components/responses/${response}`)
+        .build();
+}
+
+const schemaRef = (schema: string): ob.ReferenceObject => {
+    return new ob.ReferenceObjectBuilder(`#/components/schemas/${schema}`)
         .build();
 }
 
