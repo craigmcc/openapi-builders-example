@@ -34,18 +34,16 @@ export default function generate(): string {
 
         const openApiBuilder = new ob.OpenApiObjectBuilder(
             new ob.InfoObjectBuilder("Example Application", "1.0.0")
-                .addContact(contactBuilder().build())
-                .addDescription("Illustrate ways to use Builder Pattern builders for OpenAPI")
-                .addLicense(new ob.LicenseObjectBuilder("Apache-2.0")
-                    .addUrl("https://apache.org/licenses/LICENSE-2.0")
+                .contact(contactBuilder().build())
+                .description("Illustrate ways to use Builder Pattern builders for OpenAPI")
+                .license(new ob.LicenseObjectBuilder("Apache-2.0")
+                    .url("https://apache.org/licenses/LICENSE-2.0")
                     .build()
                 )
                 .build())
-            .addComponents(components())
-            .addPathItems(modelPathItems())
+            .components(components())
+            .pathItems(modelPathItems())
         ;
-
-        // Lots more stuff
 
         RESULT = openApiBuilder.asJson();
 
@@ -59,26 +57,26 @@ export default function generate(): string {
 
 const components = (): ob.ComponentsObject => {
     const builder = new ob.ComponentsObjectBuilder()
-        .addParameters(queryParameters())
-        .addRequestBodies(modelRequestBodies())
-        .addResponses(errorResponses())
-        .addResponses(modelResponses())
-        .addSchemas(errorSchemas())
-        .addSchemas(modelSchemas())
+        .parameters(queryParameters())
+        .requestBodies(modelRequestBodies())
+        .responses(errorResponses())
+        .responses(modelResponses())
+        .schemas(errorSchemas())
+        .schemas(modelSchemas())
     ;
     return builder.build();
 }
 
 const contactBuilder = (): ob.ContactObjectBuilder => {
     return new ob.ContactObjectBuilder()
-        .addEmail("fred@example.com")
-        .addName("Fred Flintstone");
+        .email("fred@example.com")
+        .name("Fred Flintstone");
 }
 
 const errorResponse = (description: string): ob.ResponseObject => {
     return new ob.ResponseObjectBuilder(description)
-        .addContent(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
-            .addExample({
+        .content(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
+            .example({
                 description: "User Not Found Error",
                 value: {
                     context: "UserLookupService",
@@ -86,7 +84,7 @@ const errorResponse = (description: string): ob.ResponseObject => {
                     status: 404,
                 }
             })
-            .addSchema(schemaRef(ERROR_SCHEMA)))
+            .schema(schemaRef(ERROR_SCHEMA)))
         .build();
 }
 
@@ -100,7 +98,7 @@ const errorResponses = (): ob.ResponsesObject => {
 
 const errorSchema = (): ob.SchemaObject => {
     return new ob.SchemaObjectBuilder()
-        .addExample({
+        .example({
             description: "User Not Found Error",
             value: {
                 context: "UserLookupService",
@@ -108,13 +106,13 @@ const errorSchema = (): ob.SchemaObject => {
                 status: 404,
             }
         })
-        .addProperty("context", new ob.SchemaObjectBuilder("string", "Error source location")
+        .property("context", new ob.SchemaObjectBuilder("string", "Error source location")
             .build())
-        .addProperty("message", new ob.SchemaObjectBuilder("string", "Error message summary")
+        .property("message", new ob.SchemaObjectBuilder("string", "Error message summary")
             .build())
-        .addProperty("status", new ob.SchemaObjectBuilder("integer", "HTTP status code")
+        .property("status", new ob.SchemaObjectBuilder("integer", "HTTP status code")
             .build())
-        .addType("object")
+        .type("object")
         .build();
 }
 
@@ -132,12 +130,12 @@ const modelId = (model: String): string => {
 const modelOperationAll = (model: string): ob.OperationObject => {
     const pluralModel = pluralize(model);
     return new ob.OperationObjectBuilder()
-        .addDescription(`Return all visible ${pluralModel}`)
-        .addParameter(parameterRef(QUERY_LIMIT))
-        .addParameter(parameterRef(QUERY_OFFSET))
-        .addResponse(STATUS_OK, responseRef(pluralize(model)))
-        .addResponse(STATUS_FORBIDDEN, responseRef(STATUS_FORBIDDEN))
-        .addSummary(`The requested ${pluralModel}`)
+        .description(`Return all visible ${pluralModel}`)
+        .parameter(parameterRef(QUERY_LIMIT))
+        .parameter(parameterRef(QUERY_OFFSET))
+        .response(STATUS_OK, responseRef(pluralize(model)))
+        .response(STATUS_FORBIDDEN, responseRef(STATUS_FORBIDDEN))
+        .summary(`The requested ${pluralModel}`)
         .build();
 }
 
@@ -145,59 +143,59 @@ const modelOperationAll = (model: string): ob.OperationObject => {
 const modelOperationChildren = (parent: string, child: string): ob.OperationObject => {
     const pluralChild = pluralize(child);
     return new ob.OperationObjectBuilder()
-        .addDescription(`Return all ${pluralChild} for the specified ${parent}`)
-        .addParameter(parameterRef(QUERY_LIMIT))
-        .addParameter(parameterRef(QUERY_OFFSET))
-        .addResponse(STATUS_OK, responseRef(pluralize(child)))
-        .addResponse(STATUS_FORBIDDEN, responseRef(STATUS_FORBIDDEN))
-        .addResponse(STATUS_NOT_FOUND, responseRef(STATUS_NOT_FOUND))
-        .addSummary(`The requested ${pluralChild}`)
+        .description(`Return all ${pluralChild} for the specified ${parent}`)
+        .parameter(parameterRef(QUERY_LIMIT))
+        .parameter(parameterRef(QUERY_OFFSET))
+        .response(STATUS_OK, responseRef(pluralize(child)))
+        .response(STATUS_FORBIDDEN, responseRef(STATUS_FORBIDDEN))
+        .response(STATUS_NOT_FOUND, responseRef(STATUS_NOT_FOUND))
+        .summary(`The requested ${pluralChild}`)
         .build();
 }
 
 // Return an operation that returns the specified model object
 const modelOperationFind = (model: string): ob.OperationObject => {
     return new ob.OperationObjectBuilder()
-        .addDescription(`Return the specified ${model}`)
-        .addResponse(STATUS_OK, responseRef(model))
-        .addResponse(STATUS_FORBIDDEN, responseRef(STATUS_FORBIDDEN))
-        .addResponse(STATUS_NOT_FOUND, responseRef(STATUS_NOT_FOUND))
-        .addSummary(`The specified ${model}`)
+        .description(`Return the specified ${model}`)
+        .response(STATUS_OK, responseRef(model))
+        .response(STATUS_FORBIDDEN, responseRef(STATUS_FORBIDDEN))
+        .response(STATUS_NOT_FOUND, responseRef(STATUS_NOT_FOUND))
+        .summary(`The specified ${model}`)
         .build();
 }
 
 // Return an operation that creates and returns the specified model object
 const modelOperationInsert = (model: string): ob.OperationObject => {
     return new ob.OperationObjectBuilder()
-        .addDescription(`Create and return the specified ${model}`)
-        .addRequestBody(requestBodyRef(model))
-        .addResponse(STATUS_CREATED, responseRef(model))
-        .addResponse(STATUS_FORBIDDEN, responseRef(STATUS_FORBIDDEN))
-        .addResponse(STATUS_NOT_FOUND, responseRef(STATUS_NOT_FOUND))
-        .addSummary(`Created ${model}`)
+        .description(`Create and return the specified ${model}`)
+        .requestBody(requestBodyRef(model))
+        .response(STATUS_CREATED, responseRef(model))
+        .response(STATUS_FORBIDDEN, responseRef(STATUS_FORBIDDEN))
+        .response(STATUS_NOT_FOUND, responseRef(STATUS_NOT_FOUND))
+        .summary(`Created ${model}`)
         .build();
 }
 
 // Return an operation that deletes and returns the specified model object
 const modelOperationRemove = (model: string): ob.OperationObject => {
     return new ob.OperationObjectBuilder()
-        .addDescription(`Delete and return the specified ${model}`)
-        .addResponse(STATUS_OK, responseRef(model))
-        .addResponse(STATUS_FORBIDDEN, responseRef(STATUS_FORBIDDEN))
-        .addResponse(STATUS_NOT_FOUND, responseRef(STATUS_NOT_FOUND))
-        .addSummary(`Deleted ${model}`)
+        .description(`Delete and return the specified ${model}`)
+        .response(STATUS_OK, responseRef(model))
+        .response(STATUS_FORBIDDEN, responseRef(STATUS_FORBIDDEN))
+        .response(STATUS_NOT_FOUND, responseRef(STATUS_NOT_FOUND))
+        .summary(`Deleted ${model}`)
         .build();
 }
 
 // Return an operation that updates the specified model object
 const modelOperationUpdate = (model: string): ob.OperationObject => {
     return new ob.OperationObjectBuilder()
-        .addDescription(`Update and return the specified ${model}`)
-        .addRequestBody(requestBodyRef(model))
-        .addResponse(STATUS_OK, responseRef(model))
-        .addResponse(STATUS_FORBIDDEN, responseRef(STATUS_FORBIDDEN))
-        .addResponse(STATUS_NOT_FOUND, responseRef(STATUS_NOT_FOUND))
-        .addSummary(`Updated ${model}`)
+        .description(`Update and return the specified ${model}`)
+        .requestBody(requestBodyRef(model))
+        .response(STATUS_OK, responseRef(model))
+        .response(STATUS_FORBIDDEN, responseRef(STATUS_FORBIDDEN))
+        .response(STATUS_NOT_FOUND, responseRef(STATUS_NOT_FOUND))
+        .summary(`Updated ${model}`)
         .build();
 }
 
@@ -207,21 +205,21 @@ const modelParameter = (model: String): string => {
 
 const modelPathItemChild = (model: string): ob.PathItemObject => {
     const builder = new ob.PathItemObjectBuilder()
-        .addDelete(modelOperationRemove(model))
-        .addGet(modelOperationFind(model))
-        .addParameter(new ob.ParameterObjectBuilder("path", modelId(model))
-            .addDescription(`ID of the specified ${model}`)
+        .delete(modelOperationRemove(model))
+        .get(modelOperationFind(model))
+        .parameter(new ob.ParameterObjectBuilder("path", modelId(model))
+            .description(`ID of the specified ${model}`)
             .build())
-        .addPut(modelOperationUpdate(model))
+        .put(modelOperationUpdate(model))
     ;
     return builder.build();
 }
 
 const modelPathItemChildren = (parent: string, child: string): ob.PathItemObject => {
     const builder = new ob.PathItemObjectBuilder()
-        .addGet(modelOperationChildren(parent, child))
-        .addParameter(new ob.ParameterObjectBuilder("path", modelId(parent))
-            .addDescription(`ID of the specified ${parent}`)
+        .get(modelOperationChildren(parent, child))
+        .parameter(new ob.ParameterObjectBuilder("path", modelId(parent))
+            .description(`ID of the specified ${parent}`)
             .build())
     ;
     return builder.build();
@@ -229,8 +227,8 @@ const modelPathItemChildren = (parent: string, child: string): ob.PathItemObject
 
 const modelPathItemParent = (model: string): ob.PathItemObject => {
     const builder = new ob.PathItemObjectBuilder()
-        .addGet(modelOperationAll(model))
-        .addPost(modelOperationInsert(model))
+        .get(modelOperationAll(model))
+        .post(modelOperationInsert(model))
     ;
     return builder.build();
 }
@@ -262,16 +260,16 @@ const modelPrefix = (model: String): string => {
 const modelRequestBodies = (): ob.RequestBodiesObject => {
     const requestBodies : ob.RequestBodiesObject = {};
     requestBodies[POSTING_MODEL] = new ob.RequestBodyObjectBuilder()
-        .addContent(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
-            .addSchema(schemaRef(POSTING_MODEL))
+        .content(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
+            .schema(schemaRef(POSTING_MODEL))
             .build())
-        .addRequired(true)
+        .required(true)
         .build();
     requestBodies[USER_MODEL] = new ob.RequestBodyObjectBuilder()
-        .addContent(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
-            .addSchema(schemaRef(POSTING_MODEL))
+        .content(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
+            .schema(schemaRef(POSTING_MODEL))
             .build())
-        .addRequired(true)
+        .required(true)
         .build();
     return requestBodies;
 }
@@ -279,28 +277,28 @@ const modelRequestBodies = (): ob.RequestBodiesObject => {
 const modelResponses = (): ob.ResponsesObject => {
     const modelResponses: ob.ResponsesObject = {};
     modelResponses[POSTING_MODEL] = new ob.ResponseObjectBuilder(`The specified ${POSTING_MODEL}`)
-        .addContent(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
-            .addSchema(schemaRef(POSTING_MODEL))
+        .content(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
+            .schema(schemaRef(POSTING_MODEL))
             .build())
         .build();
     modelResponses[pluralize(POSTING_MODEL)] = new ob.ResponseObjectBuilder(`The requested ${pluralize(POSTING_MODEL)}`)
-        .addContent(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
-            .addSchema(new ob.SchemaObjectBuilder()
-                .addItems(schemaRef(POSTING_MODEL))
-                .addType("array")
+        .content(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
+            .schema(new ob.SchemaObjectBuilder()
+                .items(schemaRef(POSTING_MODEL))
+                .type("array")
                 .build())
             .build())
         .build();
     modelResponses[USER_MODEL] = new ob.ResponseObjectBuilder(`The specified ${USER_MODEL}`)
-        .addContent(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
-            .addSchema(schemaRef(USER_MODEL))
+        .content(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
+            .schema(schemaRef(USER_MODEL))
             .build())
         .build();
     modelResponses[pluralize(USER_MODEL)] = new ob.ResponseObjectBuilder(`The requested ${pluralize(USER_MODEL)}`)
-        .addContent(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
-            .addSchema(new ob.SchemaObjectBuilder()
-                .addItems(schemaRef(USER_MODEL))
-                .addType("array")
+        .content(MEDIA_TYPE, new ob.MediaTypeObjectBuilder()
+            .schema(new ob.SchemaObjectBuilder()
+                .items(schemaRef(USER_MODEL))
+                .type("array")
                 .build())
             .build())
         .build();
@@ -321,7 +319,7 @@ const parameterRef = (query: string): ob.ReferenceObject => {
 
 const postingSchema = (): ob.SchemaObject => {
     return new ob.SchemaObjectBuilder("object", "Blog Posting by a registered user")
-        .addExample({
+        .example({
             description: "An example of a blog posting",
             value: {
                 id: 456,
@@ -329,12 +327,12 @@ const postingSchema = (): ob.SchemaObject => {
                 userId: 123,
             }
         })
-        .addProperty("id", new ob.SchemaObjectBuilder("integer", "Primary key", true)
+        .property("id", new ob.SchemaObjectBuilder("integer", "Primary key", true)
             .build())
-        .addProperty("userId", new ob.SchemaObjectBuilder("integer", "User ID")
-            .addNullable(false)
+        .property("userId", new ob.SchemaObjectBuilder("integer", "User ID")
+            .nullable(false)
             .build())
-        .addProperty("posting", new ob.SchemaObjectBuilder("string", "Blog Post content", false)
+        .property("posting", new ob.SchemaObjectBuilder("string", "Blog Post content", false)
             .build())
         .build();
 }
@@ -342,10 +340,10 @@ const postingSchema = (): ob.SchemaObject => {
 const queryParameters = (): ob.ParametersObject => {
     const parameters: ob.ParametersObject = {};
     parameters[QUERY_LIMIT] = new ob.ParameterObjectBuilder("query", QUERY_LIMIT)
-        .addDescription("Maximum number of rows returned (default is 25)")
+        .description("Maximum number of rows returned (default is 25)")
         .build();
     parameters[QUERY_OFFSET] = new ob.ParameterObjectBuilder("query", QUERY_OFFSET)
-        .addDescription("Zero-relative offset to the first returned row (default is 0)")
+        .description("Zero-relative offset to the first returned row (default is 0)")
         .build();
     return parameters;
 }
@@ -367,7 +365,7 @@ const schemaRef = (schema: string): ob.ReferenceObject => {
 
 const userSchema = (): ob.SchemaObject => {
     return new ob.SchemaObjectBuilder("object", "Registered User")
-        .addExample({
+        .example({
             description: "An example of a registered user",
             value: {
                 id: 123,
@@ -375,14 +373,14 @@ const userSchema = (): ob.SchemaObject => {
                 lastName: "Rubble",
             }
         })
-        .addProperty("id", new ob.SchemaObjectBuilder("integer", "Primary key", true)
+        .property("id", new ob.SchemaObjectBuilder("integer", "Primary key", true)
             .build())
-        .addProperty("email", new ob.SchemaObjectBuilder("string", "User email address")
-            .addNullable(true)
+        .property("email", new ob.SchemaObjectBuilder("string", "User email address")
+            .nullable(true)
             .build())
-        .addProperty("firstName", new ob.SchemaObjectBuilder("string", "User first name", false)
+        .property("firstName", new ob.SchemaObjectBuilder("string", "User first name", false)
             .build())
-        .addProperty("lastName", new ob.SchemaObjectBuilder("string", "User last name", false)
+        .property("lastName", new ob.SchemaObjectBuilder("string", "User last name", false)
             .build())
         .build();
 }
