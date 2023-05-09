@@ -4,7 +4,7 @@
 
 // Internal Modules ----------------------------------------------------------
 
-import generate31 from "./generate31";
+import generate31 from "./3.1/generate31";
 
 // Public Logic --------------------------------------------------------------
 

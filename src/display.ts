@@ -9,8 +9,8 @@ const pathToSwaggerUI = require("swagger-ui-dist").absolutePath();
 
 // Internal Modules ----------------------------------------------------------
 
-import generate30 from "./generate30";
-import generate31 from "./generate31";
+import generate30 from "./3.0/generate30";
+import generate31 from "./3.1/generate31";
 
 // Public Logic --------------------------------------------------------------
 
