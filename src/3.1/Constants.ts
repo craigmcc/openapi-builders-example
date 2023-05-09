@@ -1,6 +1,10 @@
-// constants.ts --------------------------------------------------------------
+// Constants.ts --------------------------------------------------------------
 
-// Manifest constants for OpenAPI Builder (3.1) modules.
+/**
+ * Manifest constants for OpenAPI Builder 3.1 generators.
+ *
+ * @packageDocumentation
+ */
 
 // Miscellaneous Constants ---------------------------------------------------
 

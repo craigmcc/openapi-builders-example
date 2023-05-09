@@ -1,6 +1,10 @@
-// common.ts -----------------------------------------------------------------
+// Common.ts -----------------------------------------------------------------
 
-// OpenAPI Builder 3.1 common constructs
+/**
+ * Common functions for OpenAPI Builder 3.1 generators.
+ *
+ * @packageDocumentation
+ */
 
 // External Modules ----------------------------------------------------------
 
@@ -20,7 +24,7 @@ import {
     OFFSET,
     OK,
     STRING,
-} from "./constants";
+} from "./Constants";
 
 // Public Objects ------------------------------------------------------------
 

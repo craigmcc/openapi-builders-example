@@ -1,6 +1,4 @@
-// generate31.ts -------------------------------------------------------------
-
-import {MediaTypeObjectBuilder} from "@craigmcc/openapi-builders";
+// Generate31.ts -------------------------------------------------------------
 
 /**
  * Function to generate the OpenAPI 3.1 description document for a simple
@@ -19,7 +17,7 @@ const pluralize = require("pluralize");
 import {
     parameterRef,
     schemaRef,
-} from "./common";
+} from "./Common";
 import {
     APPLICATION_JSON,
     BAD_REQUEST,
@@ -29,7 +27,7 @@ import {
     REQUIRE_ANY,
     REQUIRE_REGULAR,
     REQUIRE_SUPERUSER,
-} from "./constants";
+} from "./Constants";
 
 // Configuration Constants ---------------------------------------------------
 
