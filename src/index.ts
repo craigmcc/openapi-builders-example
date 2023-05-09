@@ -4,8 +4,8 @@
 
 // Internal Modules ---------------------------------------------------------
 
-import generate from "./generate";
+import generate30 from "./generate30";
 
 // Public Logic -------------------------------------------------------------
 
-console.log(generate());
+console.log(generate30());

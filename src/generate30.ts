@@ -1,4 +1,4 @@
-// generate ------------------------------------------------------------------
+// generate30.ts -------------------------------------------------------------
 
 // Function to generate the OpenAPI description document for a simple
 // application, using @craigmcc/openapi-builders tooling.
@@ -7,7 +7,7 @@
 
 const pluralize = require("pluralize");
 //import * as ob from "@craigmcc/openapi-builders/dist/3.0";
-import * as ob from "@craigmcc/openapi-builders";
+import * as ob from "@craigmcc/openapi-builders/dist/3.0";
 
 // Configuration Constants ---------------------------------------------------
 
@@ -28,7 +28,7 @@ const USER_MODEL = "User";
 
 let RESULT: string = "";
 
-export default function generate(): string {
+export default function generate30(): string {
 
     if (RESULT === "") {
 
