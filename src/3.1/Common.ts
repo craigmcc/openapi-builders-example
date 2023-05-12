@@ -26,7 +26,7 @@ import {
     STRING,
 } from "./Constants";
 
-// Public Objects ------------------------------------------------------------
+// Public Objects ============================================================
 
 // Component References ------------------------------------------------------
 
@@ -77,17 +77,88 @@ export const schemaRef = (name: string): ob.ReferenceObject => {
 
 // Operations ----------------------------------------------------------------
 
-// Parameters ----------------------------------------------------------------
+// TODO
 
 // Path Items ----------------------------------------------------------------
 
+// TODO
+
 // Path Parameters -----------------------------------------------------------
+
+/**
+ * Return a path parameter string for the specified `modelId`.
+ */
+export function pathParameter(modelId: string): string {
+    return "{" + modelId + "}";
+}
 
 // Property Schemas ----------------------------------------------------------
 
+// TODO
+
 // Query Parameters ----------------------------------------------------------
+
+/**
+ * Return the query parameters relevant for paginated requests.
+ */
+export function paginationParameters(): ob.ParametersObject {
+    const parametersObject: ob.ParametersObject = {};
+    parametersObject[LIMIT] = parameterRef(LIMIT);
+    parametersObject[OFFSET] = parameterRef(OFFSET);
+    return parametersObject;
+}
 
 // Request Bodies ------------------------------------------------------------
 
+/**
+ * Return a `RequestBodyObject` for a request body corresponding to
+ * the specified model name.
+ */
+export function modelRequestBody(model: string): ob.RequestBodyObject {
+    const modelRequestBody = new ob.RequestBodyObjectBuilder()
+        .content(APPLICATION_JSON, new ob.MediaTypeObjectBuilder()
+            .schema(schemaRef(model))
+            .build())
+        .required(true)
+        .build();
+    return modelRequestBody;
+}
+
 // Responses -----------------------------------------------------------------
 
+/**
+ * Return a `ResponseObject` for an error response with the
+ * specified description.
+ */
+export function errorResponse(description: string): ob.ResponseObject {
+    const errorResponse = new ob.ResponseObjectBuilder(description)
+        .content(APPLICATION_JSON, new ob.MediaTypeObjectBuilder()
+            .schema(schemaRef(ERROR))
+            .build())
+        .build();
+    return errorResponse;
+}
+
+/**
+ * Return a `ResponseObject` for a single instance of the specified model.
+ */
+export function modelResponse(model: string): ob.ResponseObject {
+    const modelResponse = new ob.ResponseObjectBuilder(`The requested ${model}`)
+        .content(APPLICATION_JSON, new ob.MediaTypeObjectBuilder()
+            .schema(schemaRef(model))
+            .build())
+        .build();
+    return modelResponse;
+}
+
+/**
+ * Return a `ResponseObject` for an array of the specified model.
+ */
+export function modelsResponse(model: string): ob.ResponseObject {
+    const modelsResponse = new ob.ResponseObjectBuilder(`The requested ${pluralize(model)}`)
+        .content(APPLICATION_JSON, new ob.MediaTypeObjectBuilder()
+            .schema(schemaRef(pluralize(model)))
+            .build())
+        .build();
+    return modelsResponse;
+}
