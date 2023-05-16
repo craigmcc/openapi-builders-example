@@ -34,50 +34,211 @@ import {
  * A reference to the specified parameter.
  */
 export const parameterRef = (name: string): ob.ReferenceObject => {
-    const parameterRef = new ob.ReferenceObjectBuilder(`#/components/parameters/${name}`)
+    return new ob.ReferenceObjectBuilder(`#/components/parameters/${name}`)
         .build();
-    return parameterRef;
 }
 
 /**
  * A reference to the specified path item.
  */
 export const pathItemRef = (name: string): ob.ReferenceObject => {
-    const pathItemRef = new ob.ReferenceObjectBuilder(`#/components/pathItems/${name}`)
+    return new ob.ReferenceObjectBuilder(`#/components/pathItems/${name}`)
         .build();
-    return pathItemRef;
 }
 
 /**
  * A reference to the specified request body.
  */
 export const requestBodyRef = (name: string): ob.ReferenceObject => {
-    const requestBodyRef = new ob.ReferenceObjectBuilder(`#/components/requestBodies/${name}`)
+    return new ob.ReferenceObjectBuilder(`#/components/requestBodies/${name}`)
         .build();
-    return requestBodyRef;
 }
 
 /**
  * A reference to the specified response.
  */
 export const responseRef = (name: string): ob.ReferenceObject => {
-    const responseRef = new ob.ReferenceObjectBuilder(`#/components/responses/${name}`)
+    return new ob.ReferenceObjectBuilder(`#/components/responses/${name}`)
         .build();
-    return responseRef;
 }
 
 /**
  * A reference to the specified schema.
  */
 export const schemaRef = (name: string): ob.ReferenceObject => {
-    const schemaRef = new ob.ReferenceObjectBuilder(`#/components/schemas/${name}`)
+    return new ob.ReferenceObjectBuilder(`#/components/schemas/${name}`)
         .build();
-    return schemaRef;
 }
 
 // Operations ----------------------------------------------------------------
 
-// TODO
+/**
+ * A GET operation to return an array of model objects.
+ *
+ * @param model Name of the model whose objects are being returned
+ * @param tag Optional tag for this operation
+ * @param responses Optional responses object identifying possible responses
+ * @param includes Optional include-child query parameters for this operation
+ * @param matches Optional match-field query parameters for this operation
+ */
+export function allOperation(
+    model: string,
+    tag: string | null,
+    responses?: () => ob.ResponsesObject,
+    includes?: () => ob.ParametersObject,
+    matches?: () => ob.ParametersObject,
+): ob.OperationObject
+{
+    const models = pluralize(model);
+    const builder = new ob.OperationObjectBuilder()
+        .description(`Return all matching ${models}`)
+        .parameters(includes ? includes() : {})
+        .parameters(matches ? matches() : {})
+        .parameters(paginationParameters())
+        .responses(responses ? responses() : {})
+        .summary(`The requested ${models}`)
+    ;
+    if (tag) {
+        builder.tag(new ob.TagObjectBuilder(tag).build());
+    }
+    return builder.build();
+}
+
+/**
+ * A GET operation to return an array of children of a parent model object.
+ *
+ * @param parentModel Name of the model whose children are being returned
+ * @param childModel Name of the models of the child objects
+ * @param tag Optional tag for this operation
+ * @param responses Optional responses object identifying possible responses
+ * @param includes Optional include-child query parameters for this operation
+ * @param matches Optional match-field query parameters for this operation
+ * @param responses Optional responses object identifying possible responses
+ */
+export function childrenOperation(
+    parentModel: string,
+    childModel: string,
+    tag: string | null,
+    responses?: () => ob.ResponsesObject,
+    includes?: () => ob.ParametersObject,
+    matches?: () => ob.ParametersObject,
+): ob.OperationObject
+{
+    const children = pluralize(childModel);
+    const builder = new ob.OperationObjectBuilder()
+        .description(`Return matching ${children} of this ${parentModel}`)
+        .parameters(includes ? includes() : {})
+        .parameters(matches ? matches() : {})
+        .parameters(paginationParameters())
+        .responses(responses ? responses() : {})
+        .summary(`The requested ${children}`)
+    ;
+    if (tag) {
+        builder.tag(new ob.TagObjectBuilder(tag).build());
+    }
+    return builder.build();
+}
+
+/**
+ * A GET operation to return a specific model object.
+ *
+ * @param model Name of the model to be returned
+ * @param tag Optional tag for this operation
+ * @param responses Optional responses object identifying possible responses
+ * @param includes Optional include-child parameters for this operation
+ */
+export function findOperation(
+    model: string,
+    tag: string | null,
+    responses?: () => ob.ResponsesObject,
+    includes?: () => ob.ParametersObject,
+)
+{
+    const builder = new ob.OperationObjectBuilder()
+       .description(`Return the specified ${model}`)
+        .parameters(includes ? includes() : {})
+        .responses(responses ? responses() : {})
+        .summary(`The specified ${model}`)
+    ;
+    if (tag) {
+        builder.tag(new ob.TagObjectBuilder(tag).build());
+    }
+    return builder.build();
+}
+
+/**
+ * A POST operation to create and return a new object.
+ *
+ * @param model Name of the model to be created and returned
+ * @param tag Optional tag for this operation
+ * @param responses Optional responses object identifying possible responses
+ */
+export function insertOperation(
+    model: string,
+    tag: string | null,
+    responses?: () => ob.ResponsesObject,
+): ob.OperationObject
+{
+    const builder = new ob.OperationObjectBuilder()
+        .description(`Create and return the specified ${model}`)
+        .requestBody(requestBodyRef(model))
+        .responses(responses ? responses() : {})
+        .summary(`The created ${model}`)
+    ;
+    if (tag) {
+        builder.tag(new ob.TagObjectBuilder(tag).build());
+    }
+    return builder.build();
+}
+
+/**
+ * A DELETE operation to remove and return the specified object
+ *
+ * @param model Name of the model to be deleted and returned
+ * @param tag Optional tag for this operation
+ * @param responses Optional responses object identifying possible responses
+ */
+export function removeOperation(
+    model: string,
+    tag: string | null,
+    responses?: () => ob.ResponsesObject,
+): ob.OperationObject
+{
+    const builder = new ob.OperationObjectBuilder()
+        .description(`Remove and return the specified ${model}`)
+        .responses(responses ? responses() : {})
+        .summary(`The removed ${model}`)
+    ;
+    if (tag) {
+        builder.tag(new ob.TagObjectBuilder(tag).build());
+    }
+    return builder.build();
+}
+
+/**
+ * A PUT operation to update and return the specified object
+ *
+ * @param model Name of the model to be updated and returned
+ * @param tag Optional tag for this operation
+ * @param responses Optional responses object identifying possible responses
+ */
+export function updateOperation(
+    model: string,
+    tag: string | null,
+    responses?: () => ob.ResponsesObject,
+): ob.OperationObject
+{
+    const builder = new ob.OperationObjectBuilder()
+        .description(`Update and return the specified ${model}`)
+        .requestBody(requestBodyRef(model))
+        .responses(responses ? responses() : {})
+        .summary(`The updated ${model}`)
+    ;
+    if (tag) {
+        builder.tag(new ob.TagObjectBuilder(tag).build());
+    }
+    return builder.build();
+}
 
 // Path Items ----------------------------------------------------------------
 
@@ -95,6 +256,63 @@ export function pathParameter(modelId: string): string {
 // Property Schemas ----------------------------------------------------------
 
 // TODO
+
+/**
+ * Property schema for the `active` property of the specified model.
+ */
+export function activeProperty(model: string): ob.SchemaPropertyObject {
+    const property = new ob.SchemaPropertyObjectBuilder("boolean")
+        .description(`Is this ${model} active?`)
+        //TODO .nullable(true)
+        .build();
+    return property;
+}
+
+/**
+ * Property schema for the `id` property of the specified model.
+ * Technically nullable because not required on inserts.
+ */
+export function idProperty(model: string): ob.SchemaPropertyObject {
+    const property = new ob.SchemaPropertyObjectBuilder("integer")
+        .description(`Primary key of this ${model}`)
+        //TODO .nullable(true)
+        .build();
+    return property;
+}
+
+/**
+ * Property schema for the `libraryId` property of the specified model.
+ */
+export function libraryIdProperty(model: string): ob.SchemaPropertyObject {
+    const property = new ob.SchemaPropertyObjectBuilder("integer")
+        .description(`Primary key of the Library that owns this ${model}`)
+        //TODO .nullable(false)
+        .build();
+    return property;
+}
+
+/**
+ * Property schema for the `name` property of the specified model.
+ */
+export function nameProperty(model: string): ob.SchemaPropertyObject {
+    const property = new ob.SchemaPropertyObjectBuilder("string")
+        .description(`Canonical name of this ${model}`)
+        // TODO .nullable(false)
+        .build();
+    return property;
+}
+
+/**
+ * Property schema for the `notes` property of the specified model.
+ */
+export function notesProperty(model: string): ob.SchemaPropertyObject {
+    const property = new ob.SchemaPropertyObjectBuilder("string")
+        .description(`General notes about this ${model}`)
+        //TODO .nullable(true)
+        .build();
+    return property;
+}
+
 
 // Query Parameters ----------------------------------------------------------
 
