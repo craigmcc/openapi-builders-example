@@ -16,7 +16,6 @@ const pluralize = require("pluralize");
 
 import {
     parameterRef,
-    schemaRef,
 } from "./Common";
 import {
     APPLICATION_JSON,
@@ -28,6 +27,9 @@ import {
     REQUIRE_REGULAR,
     REQUIRE_SUPERUSER,
 } from "./Constants";
+import {
+    schemaRef
+} from "./Helpers";
 
 // Configuration Constants ---------------------------------------------------
 

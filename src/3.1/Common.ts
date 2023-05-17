@@ -1,7 +1,7 @@
 // Common.ts -----------------------------------------------------------------
 
 /**
- * Common functions for OpenAPI Builder 3.1 generators.
+ * Common functions for OpenAPI Builder 3.1 generators, specific to this project
  *
  * @packageDocumentation
  */
@@ -17,7 +17,6 @@ import {
     APPLICATION_JSON,
     BAD_REQUEST,
     CREATED,
-    ERROR,
     FORBIDDEN,
     LIMIT,
     NOT_FOUND,
@@ -25,6 +24,10 @@ import {
     OK,
     STRING,
 } from "./Constants";
+import {
+    ERROR,
+    schemaRef,
+} from "./Helpers";
 
 // Public Objects ============================================================
 
@@ -59,14 +62,6 @@ export const requestBodyRef = (name: string): ob.ReferenceObject => {
  */
 export const responseRef = (name: string): ob.ReferenceObject => {
     return new ob.ReferenceObjectBuilder(`#/components/responses/${name}`)
-        .build();
-}
-
-/**
- * A reference to the specified schema.
- */
-export const schemaRef = (name: string): ob.ReferenceObject => {
-    return new ob.ReferenceObjectBuilder(`#/components/schemas/${name}`)
         .build();
 }
 
@@ -384,8 +379,6 @@ export function pathParameter(modelId: string): string {
 
 // Property Schemas ----------------------------------------------------------
 
-// TODO
-
 /**
  * Property schema for the `active` property of the specified model.
  */
@@ -441,7 +434,6 @@ export function notesProperty(model: string): ob.SchemaPropertyObject {
         .build();
     return property;
 }
-
 
 // Query Parameters ----------------------------------------------------------
 

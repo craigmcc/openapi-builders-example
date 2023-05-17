@@ -1,7 +1,7 @@
 // Constants.ts --------------------------------------------------------------
 
 /**
- * Manifest constants for OpenAPI Builder 3.1 generators.
+ * Manifest constants for OpenAPI Builder 3.1 generators, specific to this project.
  *
  * @packageDocumentation
  */
@@ -14,7 +14,6 @@ export const APPLICATION_JSON = "application/json";
 // Model Names ---------------------------------------------------------------
 
 export const AUTHOR = "Author";
-export const ERROR = "Error";
 export const LIBRARY = "Library";
 export const SERIES = "Series";
 export const STRING = "String";
