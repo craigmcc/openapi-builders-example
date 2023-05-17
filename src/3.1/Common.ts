@@ -242,7 +242,136 @@ export function updateOperation(
 
 // Path Items ----------------------------------------------------------------
 
-// TODO
+/**
+ * A path item for a child object collection endpoint.
+ *
+ * @param childModel Name of the model for the child objects
+ * @param parentId Name of the parent ID path parameter
+ * @param all Optional "all" OperationObject for retrieving the child collection
+ * @param insert Optional "insert" OperationObject for inserting a new child
+ */
+export function childCollectionPathItem(
+    childModel: string,
+    parentId: string,
+    all?: () => ob.OperationObject,
+    insert?: () => ob.OperationObject,
+): ob.PathItemObject
+{
+    const builder = new ob.PathItemObjectBuilder()
+        .parameter(parameterRef(parentId));
+    if (all) {
+        builder.get(all());
+    }
+    if (insert) {
+        builder.post(insert());
+    }
+    return builder.build();
+}
+
+/**
+ * A path item for a child object detail endpoint
+ *
+ * @param childModel Name of the model for the child object
+ * @param childId Name of the child ID path parameter
+ * @param parentId Name of the parent ID path parameter
+ * @param find Optional "find" OperationObject for finding the specified child
+ * @param remove Optional "remove" OperationObject for removing the specified child
+ * @param update Optional "update" OperationObject for updating the specified child
+ */
+export function childDetailPathItem(
+    childModel: string,
+    childId: string,
+    parentId: string,
+    find?: () => ob.OperationObject,
+    remove?: () => ob.OperationObject,
+    update?: () => ob.OperationObject,
+): ob.PathItemObject
+{
+    const builder = new ob.PathItemObjectBuilder()
+        .parameter(parameterRef(parentId))
+        .parameter(parameterRef(childId));
+    if (find) {
+        builder.get(find());
+    }
+    if (remove) {
+        builder.delete(remove());
+    }
+    if (update) {
+        builder.put(update());
+    }
+    return builder.build();
+}
+
+/**
+ * A path item for a parent object children endpoint
+ *
+ * @param parentId Name of the parent ID path parameter
+ * @param chlidren "all" OperationObject for finding children of this parent
+ */
+export function parentChildrenPathItem(
+    parentId: string,
+    children: () => ob.OperationObject,
+): ob.PathItemObject
+{
+    const builder = new ob.PathItemObjectBuilder()
+        .parameter(parameterRef(parentId))
+        .get(children());
+    return builder.build();
+}
+
+/**
+ * A path item for a parent object collection
+ *
+ * @param model Name of the parent model
+ * @param all Optional "all" OperationObject for finding parent objects
+ * @param insert Optional "insert" OperationObject for creating parent objects
+ */
+export function parentCollectionPathItem(
+    model: string,
+    all?: () => ob.OperationObject,
+    insert?: () => ob.OperationObject,
+): ob.PathItemObject
+{
+    const builder = new ob.PathItemObjectBuilder();
+    if (all) {
+        builder.get(all());
+    }
+    if (insert) {
+        builder.post(insert());
+    }
+    return builder.build();
+}
+
+/**
+ * A path item for a parent object detail
+ *
+ * @param model Name of the parent model
+ * @param modelId Name of the parent object ID path parameter
+ * @param find Optional "find" OperationObject for finding the parent object
+ * @param remove Optional "remove" OperationObject for removing the parent object
+ * @param update Optional "update" OperationObject for updating the parent object
+ */
+export function parentDetailPathItem(
+    model: string,
+    modelId: string,
+    find?: () => ob.OperationObject,
+    remove?: () => ob.OperationObject,
+    update?: () => ob.OperationObject,
+): ob.PathItemObject
+{
+    const builder = new ob.PathItemObjectBuilder()
+        .parameter(parameterRef(modelId));
+    if (find) {
+        builder.get(find());
+    }
+    if (remove) {
+        builder.delete(remove());
+    }
+    if (update) {
+        builder.put(update());
+    }
+    return builder.build();
+}
 
 // Path Parameters -----------------------------------------------------------
 
