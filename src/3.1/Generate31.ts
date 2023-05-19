@@ -19,15 +19,11 @@ import {
     BAD_REQUEST,
     FORBIDDEN,
     NOT_FOUND,
-    parameterRef,
     schemaRef
 } from "./Generic";
 import {
-    REQUIRE_ADMIN,
-    REQUIRE_ANY,
-    REQUIRE_REGULAR,
-    REQUIRE_SUPERUSER,
-} from "./Specific";
+    openApi,
+} from "./Unique";
 
 // Configuration Constants ---------------------------------------------------
 
@@ -44,14 +40,10 @@ export default function generate31(): string {
 
     if (RESULT === "") {
 
-        const openApi =
-            new ob.OpenApiObjectBuilder(info())
-                .components(components())
-                .tags(tags())
-                .build();
+        const openApiResult = openApi();
 
         RESULT = JSON.stringify(
-            openApi,
+            openApiResult,
             (key: string, value: any) => {
                 if ((value instanceof Map) || (value instanceof Set)) {
                     let output: any = {};
@@ -73,29 +65,6 @@ export default function generate31(): string {
 }
 
 // Private Objects -----------------------------------------------------------
-
-/**
- * Consolidated ComponentsObject for this specification document.
- */
-const components = (): ob.ComponentsObject => {
-    const components = new ob.ComponentsObjectBuilder()
-        .responses(errorResponses())
-        .schemas(schemas())
-        // TODO
-        .build();
-    return components;
-}
-
-/**
- * The ContactObject for this specification document.
- */
-const contact = (): ob.ContactObject => {
-    const contact = new ob.ContactObjectBuilder()
-        .email("fred@example.com")
-        .name("Fred Flintstone")
-        .build();
-    return contact;
-}
 
 /**
  * A ResponseObject for a specified HTTP status code and description.
@@ -139,54 +108,10 @@ const errorSchema = (): ob.SchemaObject => {
 }
 
 /**
- * The InfoObject for this specification document.
- */
-const info = (): ob.InfoObject => {
-    const info =
-        new ob.InfoObjectBuilder("Example Application", "3.1.0")
-            .contact(contact())
-            .description("Illustrate ways to use Builder Patterns for OpenAPI 3.1")
-            .license(license())
-            .build();
-    return info;
-}
-
-/**
- * The LicenseObject for this specification document.
- */
-const license = (): ob.LicenseObject => {
-    const license = new ob.LicenseObjectBuilder("Apache-2.0")
-        .identifier("Apache-2.0")
-        //.url("https://apache.org/licenses/LICENSE-2.0")
-        .build();
-    return license;
-}
-
-/**
  * Consolidated schemas for this specification document, keyed by schema name.
  */
 const schemas = (): Map<string, ob.SchemaObject> => {
     const schemas = new Map<string, ob.SchemaObject>();
     schemas.set(ERROR_SCHEMA, errorSchema());
     return schemas;
-}
-
-/**
- * Consolidated tags for this specification document.
- */
-const tags = (): ob.TagObject[] => {
-    const tags: ob.TagObject[] = [];
-    tags.push(new ob.TagObjectBuilder(REQUIRE_ADMIN)
-        .description("Requires 'admin' permission on the associated Library")
-        .build())
-    tags.push(new ob.TagObjectBuilder(REQUIRE_ANY)
-        .description("Requires any permission on the associated Library")
-        .build())
-    tags.push(new ob.TagObjectBuilder(REQUIRE_REGULAR)
-        .description("Requires 'regular' permission on the associated Library")
-        .build())
-    tags.push(new ob.TagObjectBuilder(REQUIRE_SUPERUSER)
-        .description("Requires 'superuser' permission on the overall application")
-        .build())
-    return tags;
 }
