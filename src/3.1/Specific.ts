@@ -1,7 +1,8 @@
-// Common.ts -----------------------------------------------------------------
+// Specific.ts -----------------------------------------------------------------
 
 /**
- * Common functions for OpenAPI Builder 3.1 generators, specific to this project
+ * Common constants and functions for OpenAPI Builder 3.1 generators,
+ * specific to this type of project.
  *
  * @packageDocumentation
  */
@@ -15,55 +16,34 @@ const pluralize = require("pluralize");
 
 import {
     APPLICATION_JSON,
-    BAD_REQUEST,
-    CREATED,
-    FORBIDDEN,
-    LIMIT,
-    NOT_FOUND,
-    OFFSET,
-    OK,
-    STRING,
-} from "./Constants";
-import {
+//    BAD_REQUEST,
+//    CREATED,
     ERROR,
+//    FORBIDDEN,
+//    NOT_FOUND,
+//    OK,
+    parameterRef,
+//    pathItemRef,
+    requestBodyRef,
+//    responseRef,
     schemaRef,
-} from "./Helpers";
+} from "./Generic";
 
-// Public Objects ============================================================
+// Public Constants ==========================================================
 
-// Component References ------------------------------------------------------
+// Parameter Names (Pagination) ----------------------------------------------
 
-/**
- * A reference to the specified parameter.
- */
-export const parameterRef = (name: string): ob.ReferenceObject => {
-    return new ob.ReferenceObjectBuilder(`#/components/parameters/${name}`)
-        .build();
-}
+export const LIMIT = "limit";
+export const OFFSET = "offset";
 
-/**
- * A reference to the specified path item.
- */
-export const pathItemRef = (name: string): ob.ReferenceObject => {
-    return new ob.ReferenceObjectBuilder(`#/components/pathItems/${name}`)
-        .build();
-}
+// Tag Names -----------------------------------------------------------------
 
-/**
- * A reference to the specified request body.
- */
-export const requestBodyRef = (name: string): ob.ReferenceObject => {
-    return new ob.ReferenceObjectBuilder(`#/components/requestBodies/${name}`)
-        .build();
-}
+export const REQUIRE_ADMIN = "requireAdmin";
+export const REQUIRE_ANY = "requireAny";
+export const REQUIRE_REGULAR = "requireRegular";
+export const REQUIRE_SUPERUSER = "requireSuperuser";
 
-/**
- * A reference to the specified response.
- */
-export const responseRef = (name: string): ob.ReferenceObject => {
-    return new ob.ReferenceObjectBuilder(`#/components/responses/${name}`)
-        .build();
-}
+// Public Functions ==========================================================
 
 // Operations ----------------------------------------------------------------
 
@@ -301,7 +281,7 @@ export function childDetailPathItem(
  * A path item for a parent object children endpoint
  *
  * @param parentId Name of the parent ID path parameter
- * @param chlidren "all" OperationObject for finding children of this parent
+ * @param children "all" OperationObject for finding children of this parent
  */
 export function parentChildrenPathItem(
     parentId: string,

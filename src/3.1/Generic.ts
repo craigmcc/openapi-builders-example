@@ -1,8 +1,8 @@
-// Helpers.ts ----------------------------------------------------------------
+// Generic.ts ----------------------------------------------------------------
 
 /**
- * Shared constants and helpers for OpenAPI Builder 3.1 generators, not specific
- * to a particular project.
+ * Commmon constants and functions for OpenAPI Builder 3.1 generators,
+ * not specific to a particular project.
  *
  * @packageDocumentation
  */
@@ -41,6 +41,38 @@ export const SERVER_ERROR = "500";
 // Public Functions ----------------------------------------------------------
 
 // Component References ------------------------------------------------------
+
+/**
+ * A reference to the specified parameter.
+ */
+export const parameterRef = (name: string): ob.ReferenceObject => {
+    return new ob.ReferenceObjectBuilder(`#/components/parameters/${name}`)
+        .build();
+}
+
+/**
+ * A reference to the specified path item.
+ */
+export const pathItemRef = (name: string): ob.ReferenceObject => {
+    return new ob.ReferenceObjectBuilder(`#/components/pathItems/${name}`)
+        .build();
+}
+
+/**
+ * A reference to the specified request body.
+ */
+export const requestBodyRef = (name: string): ob.ReferenceObject => {
+    return new ob.ReferenceObjectBuilder(`#/components/requestBodies/${name}`)
+        .build();
+}
+
+/**
+ * A reference to the specified response.
+ */
+export const responseRef = (name: string): ob.ReferenceObject => {
+    return new ob.ReferenceObjectBuilder(`#/components/responses/${name}`)
+        .build();
+}
 
 /**
  * A reference to the specified schema.

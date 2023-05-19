@@ -9,7 +9,6 @@
 // Miscellaneous Constants ---------------------------------------------------
 
 export const API_PREFIX = "/api";
-export const APPLICATION_JSON = "application/json";
 
 // Model Names ---------------------------------------------------------------
 
@@ -51,27 +50,4 @@ export const USERNAME = "username";
 // Parameter Names (Matches) -------------------------------------------------
 
 // Parameter Names (Other) ---------------------------------------------------
-
-// Parameter Names (Pagination) ----------------------------------------------
-
-export const LIMIT = "limit";
-export const OFFSET = "offset";
-
-// Response Status Codes ----------------------------------------------------
-
-export const OK = "200";
-export const CREATED = "201";
-export const BAD_REQUEST = "400";
-export const UNAUTHORIZED = "401";
-export const FORBIDDEN = "403";
-export const NOT_FOUND = "404";
-export const NOT_UNIQUE = "409";
-export const SERVER_ERROR = "500";
-
-// Tag Names -----------------------------------------------------------------
-
-export const REQUIRE_ADMIN = "requireAdmin";
-export const REQUIRE_ANY = "requireAny";
-export const REQUIRE_REGULAR = "requireRegular";
-export const REQUIRE_SUPERUSER = "requireSuperuser";
 

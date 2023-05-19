@@ -15,21 +15,19 @@ const pluralize = require("pluralize");
 // Internal Modules ----------------------------------------------------------
 
 import {
-    parameterRef,
-} from "./Common";
-import {
     APPLICATION_JSON,
     BAD_REQUEST,
     FORBIDDEN,
     NOT_FOUND,
+    parameterRef,
+    schemaRef
+} from "./Generic";
+import {
     REQUIRE_ADMIN,
     REQUIRE_ANY,
     REQUIRE_REGULAR,
     REQUIRE_SUPERUSER,
-} from "./Constants";
-import {
-    schemaRef
-} from "./Helpers";
+} from "./Specific";
 
 // Configuration Constants ---------------------------------------------------
 
