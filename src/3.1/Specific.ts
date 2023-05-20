@@ -52,7 +52,7 @@ export const OFFSET = "offset";
 export function allOperation(
     model: string,
     tag: string | null,
-    responses?: () => ob.ResponsesObject,
+    // responses?: () => ob.ResponsesObject,
     includes?: () => ob.ParametersObject,
     matches?: () => ob.ParametersObject,
 ): ob.OperationObject
@@ -63,7 +63,7 @@ export function allOperation(
         .parameters(includes ? includes() : {})
         .parameters(matches ? matches() : {})
         .parameters(paginationParameters())
-        .responses(responses ? responses() : {})
+        // .responses(responses ? responses() : {})
         .summary(`The requested ${models}`)
     ;
     if (tag) {
@@ -87,7 +87,7 @@ export function childrenOperation(
     parentModel: string,
     childModel: string,
     tag: string | null,
-    responses?: () => ob.ResponsesObject,
+    // responses?: () => ob.ResponsesObject,
     includes?: () => ob.ParametersObject,
     matches?: () => ob.ParametersObject,
 ): ob.OperationObject
@@ -98,7 +98,7 @@ export function childrenOperation(
         .parameters(includes ? includes() : {})
         .parameters(matches ? matches() : {})
         .parameters(paginationParameters())
-        .responses(responses ? responses() : {})
+        // .responses(responses ? responses() : {})
         .summary(`The requested ${children}`)
     ;
     if (tag) {
@@ -118,14 +118,14 @@ export function childrenOperation(
 export function findOperation(
     model: string,
     tag: string | null,
-    responses?: () => ob.ResponsesObject,
+    // responses?: () => ob.ResponsesObject,
     includes?: () => ob.ParametersObject,
 )
 {
     const builder = new ob.OperationObjectBuilder()
        .description(`Return the specified ${model}`)
         .parameters(includes ? includes() : {})
-        .responses(responses ? responses() : {})
+        // .responses(responses ? responses() : {})
         .summary(`The specified ${model}`)
     ;
     if (tag) {
@@ -350,64 +350,6 @@ export function pathParameter(modelId: string): string {
     return "{" + modelId + "}";
 }
 
-// Property Schemas ----------------------------------------------------------
-
-/**
- * Property schema for the `active` property of the specified model.
- */
-export function activeProperty(model: string): ob.SchemaPropertyObject {
-    const property = new ob.SchemaPropertyObjectBuilder("boolean")
-        .description(`Is this ${model} active?`)
-        //TODO .nullable(true)
-        .build();
-    return property;
-}
-
-/**
- * Property schema for the `id` property of the specified model.
- * Technically nullable because not required on inserts.
- */
-export function idProperty(model: string): ob.SchemaPropertyObject {
-    const property = new ob.SchemaPropertyObjectBuilder("integer")
-        .description(`Primary key of this ${model}`)
-        //TODO .nullable(true)
-        .build();
-    return property;
-}
-
-/**
- * Property schema for the `libraryId` property of the specified model.
- */
-export function libraryIdProperty(model: string): ob.SchemaPropertyObject {
-    const property = new ob.SchemaPropertyObjectBuilder("integer")
-        .description(`Primary key of the Library that owns this ${model}`)
-        //TODO .nullable(false)
-        .build();
-    return property;
-}
-
-/**
- * Property schema for the `name` property of the specified model.
- */
-export function nameProperty(model: string): ob.SchemaPropertyObject {
-    const property = new ob.SchemaPropertyObjectBuilder("string")
-        .description(`Canonical name of this ${model}`)
-        // TODO .nullable(false)
-        .build();
-    return property;
-}
-
-/**
- * Property schema for the `notes` property of the specified model.
- */
-export function notesProperty(model: string): ob.SchemaPropertyObject {
-    const property = new ob.SchemaPropertyObjectBuilder("string")
-        .description(`General notes about this ${model}`)
-        //TODO .nullable(true)
-        .build();
-    return property;
-}
-
 // Query Parameters ----------------------------------------------------------
 
 /**
@@ -473,4 +415,26 @@ export function modelsResponse(model: string): ob.ResponseObject {
             .build())
         .build();
     return modelsResponse;
+}
+
+// Schemas -------------------------------------------------------------------
+
+/**
+ * Return a `SchemaObject` for a generic error response.
+ */
+export function errorSchema(): ob.SchemaObject {
+    return new ob.SchemaObjectBuilder("object")
+        .property("context", new ob.SchemaPropertyObjectBuilder("string")
+            .description("Error source location")
+            .build())
+        .property("inner", new ob.SchemaPropertyObjectBuilder("object")
+            .description("Nested error we are wrapping (if any)")
+            .build())
+        .property("message", new ob.SchemaPropertyObjectBuilder("string")
+            .description("Error message summary")
+            .build())
+        .property("status", new ob.SchemaPropertyObjectBuilder("integer")
+            .description("HTTP status code")
+            .build())
+        .build();
 }

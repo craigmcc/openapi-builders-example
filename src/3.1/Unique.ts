@@ -14,16 +14,22 @@ const pluralize = require("pluralize");
 
 // Internal Modules ----------------------------------------------------------
 
-import {LIMIT, OFFSET} from "./Specific";
-import {APPLICATION_JSON,
+import {errorSchema, LIMIT, OFFSET} from "./Specific";
+import {
+    APPLICATION_JSON,
     BAD_REQUEST,
     ERROR,
     FORBIDDEN,
+    INTEGER,
     NOT_FOUND,
     NOT_UNIQUE,
+    NUMBER,
     SERVER_ERROR,
+    STRING,
     schemaRef
 } from "./Generic";
+import Library from "./models/Library";
+import Model from "./Model";
 
 // Public Constants ==========================================================
 
@@ -36,7 +42,6 @@ export const API_PREFIX = "/api";
 export const AUTHOR = "Author";
 export const LIBRARY = "Library";
 export const SERIES = "Series";
-export const STRING = "String";
 export const STORY = "Story";
 export const USER = "User";
 export const VOLUME = "Volume";
@@ -47,6 +52,10 @@ export const SERIES_DESCRIPTION = "Collection of related Stories, normally by th
 export const STORY_DESCRIPTION = "Individual Story that may be part of a Series, and published in one or more Volumes";
 export const USER_DESCRIPTION = "Authorized User of this application";
 export const VOLUME_DESCRIPTION = "Individual Volume (normally a book) containing one or more Stories";
+
+export const Models: Model[] = [
+    Library,
+]
 
 export const MODELS = [
     AUTHOR,
@@ -113,7 +122,7 @@ export function components(): ob.ComponentsObject {
         //TODO .pathItems(pathItems())
         .requestBodies(requestBodies())
         .responses(responses())
-        //TODO .schemas(schemas())
+        .schemas(schemas())
         .build();
 }
 
@@ -164,29 +173,29 @@ export function openApi(): ob.OpenApiObject {
 export function parameters(): ob.ParametersObject {
     return new ob.ParametersObjectBuilder()
         // Path Parameters
-        .parameter(parameterPath(AUTHOR_ID, "ID of the specified Author"))
-        .parameter(parameterPath(FIRST_NAME, "First Name of the specified Author"))
-        .parameter(parameterPath(LAST_NAME, "Last Name of the specified Author"))
-        .parameter(parameterPath(LIBRARY_ID, "ID of the specified Library"))
-        .parameter(parameterPath(NAME + "Path", "Name of the specified object"))
-        .parameter(parameterPath(SERIES_ID, "ID of the specified Series"))
-        .parameter(parameterPath(STORY_ID, "ID of the specified Story"))
-        .parameter(parameterPath(USER_ID, "ID of the specified User"))
-        .parameter(parameterPath(VOLUME_ID, "ID of the specified Volume"))
+        .parameter(AUTHOR_ID, parameterPath(AUTHOR_ID, "ID of the specified Author"))
+        .parameter(FIRST_NAME, parameterPath(FIRST_NAME, "First Name of the specified Author"))
+        .parameter(LAST_NAME, parameterPath(LAST_NAME, "Last Name of the specified Author"))
+        .parameter(LIBRARY_ID, parameterPath(LIBRARY_ID, "ID of the specified Library"))
+        .parameter(NAME+"Path", parameterPath(NAME + "Path", "Name of the specified object"))
+        .parameter(SERIES_ID, parameterPath(SERIES_ID, "ID of the specified Series"))
+        .parameter(STORY_ID, parameterPath(STORY_ID, "ID of the specified Story"))
+        .parameter(USER_ID, parameterPath(USER_ID, "ID of the specified User"))
+        .parameter(VOLUME_ID, parameterPath(VOLUME_ID, "ID of the specified Volume"))
         // Query Parameters (Include)
-        .parameter(parameterQuery(WITH_AUTHORS, "Include associated Authors", true))
-        .parameter(parameterQuery(WITH_LIBRARY, "Include parent Library", true))
-        .parameter(parameterQuery(WITH_SERIES, "Include associated Series", true))
-        .parameter(parameterQuery(WITH_STORIES, "Include associated Stories", true))
-        .parameter(parameterQuery(WITH_VOLUMES, "Include associated Volumes", true))
+        .parameter(WITH_AUTHORS, parameterQuery(WITH_AUTHORS, "Include associated Authors", true))
+        .parameter(WITH_LIBRARY, parameterQuery(WITH_LIBRARY, "Include parent Library", true))
+        .parameter(WITH_SERIES, parameterQuery(WITH_SERIES, "Include associated Series", true))
+        .parameter(WITH_STORIES, parameterQuery(WITH_STORIES, "Include associated Stories", true))
+        .parameter(WITH_VOLUMES, parameterQuery(WITH_VOLUMES, "Include associated Volumes", true))
         // Query Parameters (Match)
-        .parameter(parameterQuery(MATCH_ACTIVE, "Select only active objects", true))
-        .parameter(parameterQuery(MATCH_NAME, "Select objects with name matching wildcard"))
-        .parameter(parameterQuery(MATCH_SCOPE, "Select objects with matching scope"))
-        .parameter(parameterQuery(MATCH_USERNAME, "Select objects with matching username"))
+        .parameter(MATCH_ACTIVE, parameterQuery(MATCH_ACTIVE, "Select only active objects", true))
+        .parameter(MATCH_NAME, parameterQuery(MATCH_NAME, "Select objects with name matching wildcard"))
+        .parameter(MATCH_SCOPE, parameterQuery(MATCH_SCOPE, "Select objects with matching scope"))
+        .parameter(MATCH_USERNAME, parameterQuery(MATCH_USERNAME, "Select objects with matching username"))
         // Query Parameters (Pagination)
-        .parameter(parameterQuery(LIMIT, "Maximum number of rows to return [25]"))
-        .parameter(parameterQuery(OFFSET, "Zero-relative offset to first returned row [0]"))
+        .parameter(LIMIT, parameterQuery(LIMIT, "Maximum number of rows to return [25]"))
+        .parameter(OFFSET, parameterQuery(OFFSET, "Zero-relative offset to first returned row [0]"))
         .build();
 }
 
@@ -244,6 +253,60 @@ export function tags(): ob.TagObject[] {
         .description("Requires 'superuser' permission on the overall application")
         .build());
     return tags;
+}
+
+// Property Schemas ==========================================================
+
+/**
+ * Property schema for the `active` property of the specified model.
+ */
+export function activeProperty(model: string): ob.SchemaPropertyObject {
+    const property = new ob.SchemaPropertyObjectBuilder("boolean")
+        .description(`Is this ${model} active?`)
+        .default(true)
+        .build();
+    return property;
+}
+
+/**
+ * Property schema for the `id` property of the specified model.
+ * Technically nullable because not required on inserts.
+ */
+export function idProperty(model: string): ob.SchemaPropertyObject {
+    const property = new ob.SchemaPropertyObjectBuilder("integer")
+        .description(`Primary key of this ${model}`)
+        .build();
+    return property;
+}
+
+/**
+ * Property schema for the `libraryId` property of the specified model.
+ */
+export function libraryIdProperty(model: string): ob.SchemaPropertyObject {
+    const property = new ob.SchemaPropertyObjectBuilder("integer")
+        .description(`Primary key of the Library that owns this ${model}`)
+        .build();
+    return property;
+}
+
+/**
+ * Property schema for the `name` property of the specified model.
+ */
+export function nameProperty(model: string): ob.SchemaPropertyObject {
+    const property = new ob.SchemaPropertyObjectBuilder("string")
+        .description(`Canonical name of this ${model}`)
+        .build();
+    return property;
+}
+
+/**
+ * Property schema for the `notes` property of the specified model.
+ */
+export function notesProperty(model: string): ob.SchemaPropertyObject {
+    const property = new ob.SchemaPropertyObjectBuilder("string")
+        .description(`General notes about this ${model}`)
+        .build();
+    return property;
 }
 
 // Private Functions =========================================================
@@ -334,3 +397,27 @@ function responseModels(model: string): ob.ResponseObject {
         .build();
 }
 
+/**
+ * Return a Map of SchemaObjects, keyed by schema name.
+ */
+function schemas(): Map<string, ob.SchemaObject | ob.ReferenceObject> {
+    const map: Map<string, ob.SchemaObject | ob.ReferenceObject> = new Map();
+
+    // Application Models
+    map.set(LIBRARY, Library.schema());
+    map.set(pluralize(LIBRARY), Library.schemas());
+/* TODO - why dies the second set throw?
+    for (const model of Models) {
+        map.set(model.name, model.schema());
+        map.set(pluralize(model.name), model.schemas());
+    }
+*/
+
+    // Other schemas
+    map.set(ERROR, errorSchema());
+    map.set(INTEGER, new ob.SchemaObjectBuilder("integer").build());
+    map.set(NUMBER, new ob.SchemaObjectBuilder("number").build());
+    map.set(STRING, new ob.SchemaObjectBuilder("string").build());
+
+    return map;
+}
