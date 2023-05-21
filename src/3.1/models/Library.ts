@@ -37,10 +37,6 @@ import {parameterRef, schemaRef} from "../Generic";
 
 class Library extends Model {
 
-    constructor() {
-        super(LIBRARY);
-    }
-
     // Operations -----------------------------------------------------------
 
     public all(): ob.OperationObject[] {

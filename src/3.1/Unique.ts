@@ -53,9 +53,8 @@ export const STORY_DESCRIPTION = "Individual Story that may be part of a Series,
 export const USER_DESCRIPTION = "Authorized User of this application";
 export const VOLUME_DESCRIPTION = "Individual Volume (normally a book) containing one or more Stories";
 
-export const Models: Model[] = [
-    Library,
-]
+export const Models: Map<string, Model> = new Map();
+Models.set(LIBRARY, Library);
 
 export const MODELS = [
     AUTHOR,
@@ -404,14 +403,10 @@ function schemas(): Map<string, ob.SchemaObject | ob.ReferenceObject> {
     const map: Map<string, ob.SchemaObject | ob.ReferenceObject> = new Map();
 
     // Application Models
-    map.set(LIBRARY, Library.schema());
-    map.set(pluralize(LIBRARY), Library.schemas());
-/* TODO - why dies the second set throw?
-    for (const model of Models) {
-        map.set(model.name, model.schema());
-        map.set(pluralize(model.name), model.schemas());
+    for (const [name, model] of Models) {
+        map.set(name, model.schema());
+        map.set(pluralize(name), model.schemas());
     }
-*/
 
     // Other schemas
     map.set(ERROR, errorSchema());

@@ -22,12 +22,6 @@ import * as ob from "@craigmcc/openapi-builders/dist/3.1";
 
 export default abstract class Model {
 
-    constructor(name: string) {
-        this.name = name;
-    }
-
-    public readonly name: string;
-
     // Operations ------------------------------------------------------------
 
     /**
