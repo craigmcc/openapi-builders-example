@@ -53,15 +53,15 @@ export function allOperation(
     model: string,
     tag: string | null,
     // responses?: () => ob.ResponsesObject,
-    includes?: () => ob.ParametersObject,
-    matches?: () => ob.ParametersObject,
+    includes?: ob.ParametersObject,
+    matches?: ob.ParametersObject,
 ): ob.OperationObject
 {
     const models = pluralize(model);
     const builder = new ob.OperationObjectBuilder()
         .description(`Return all matching ${models}`)
-        .parameters(includes ? includes() : {})
-        .parameters(matches ? matches() : {})
+        .parameters(includes ? includes : {})
+        .parameters(matches ? matches : {})
         .parameters(paginationParameters())
         // .responses(responses ? responses() : {})
         .summary(`The requested ${models}`)
@@ -88,15 +88,15 @@ export function childrenOperation(
     childModel: string,
     tag: string | null,
     // responses?: () => ob.ResponsesObject,
-    includes?: () => ob.ParametersObject,
-    matches?: () => ob.ParametersObject,
+    includes?: ob.ParametersObject,
+    matches?: ob.ParametersObject,
 ): ob.OperationObject
 {
     const children = pluralize(childModel);
     const builder = new ob.OperationObjectBuilder()
         .description(`Return matching ${children} of this ${parentModel}`)
-        .parameters(includes ? includes() : {})
-        .parameters(matches ? matches() : {})
+        .parameters(includes ? includes : {})
+        .parameters(matches ? matches : {})
         .parameters(paginationParameters())
         // .responses(responses ? responses() : {})
         .summary(`The requested ${children}`)
@@ -119,12 +119,12 @@ export function findOperation(
     model: string,
     tag: string | null,
     // responses?: () => ob.ResponsesObject,
-    includes?: () => ob.ParametersObject,
+    includes?: ob.ParametersObject,
 )
 {
     const builder = new ob.OperationObjectBuilder()
        .description(`Return the specified ${model}`)
-        .parameters(includes ? includes() : {})
+        .parameters(includes ? includes : {})
         // .responses(responses ? responses() : {})
         .summary(`The specified ${model}`)
     ;

@@ -118,7 +118,7 @@ export const REQUIRE_SUPERUSER = "requireSuperuser";
 export function components(): ob.ComponentsObject {
     return new ob.ComponentsObjectBuilder()
         .parameters(parameters())
-        //TODO .pathItems(pathItems())
+        .paths(paths())
         .requestBodies(requestBodies())
         .responses(responses())
         .schemas(schemas())
@@ -196,6 +196,18 @@ export function parameters(): ob.ParametersObject {
         .parameter(LIMIT, parameterQuery(LIMIT, "Maximum number of rows to return [25]"))
         .parameter(OFFSET, parameterQuery(OFFSET, "Zero-relative offset to first returned row [0]"))
         .build();
+}
+
+/**
+ * Return a consolidated PathsObject that reflects the paths defined by each
+ * model class.
+ */
+export function paths(): ob.PathsObject {
+    const builder = new ob.PathsObjectBuilder();
+    for (const [name, model] of Models) {
+        builder.paths(model.paths());
+    }
+    return builder.build();
 }
 
 /**

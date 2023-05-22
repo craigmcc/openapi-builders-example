@@ -41,7 +41,7 @@ class Library extends Model {
 
     public all(): ob.OperationObject[] {
         const results: ob.OperationObject[] = [];
-        results.push(allOperation(LIBRARY, REQUIRE_ANY, this.includes, this.matches));
+        results.push(allOperation(LIBRARY, REQUIRE_ANY, this.includes(), this.matches()));
         return results;
     }
 
@@ -49,7 +49,7 @@ class Library extends Model {
 
     public find(): ob.OperationObject[] {
         const results: ob.OperationObject[] = [];
-        results.push(findOperation(LIBRARY, REQUIRE_REGULAR, this.includes));
+        results.push(findOperation(LIBRARY, REQUIRE_REGULAR, this.includes()));
         return results;
     }
 
