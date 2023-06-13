@@ -37,7 +37,7 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
-    "@craigmcc/openapi-builders": "^3.0.0-alpha.14",
+    "@craigmcc/openapi-builders": "^3.0.0-alpha.15",
     "express": "^4.18.2",
     "node": "^20.2.0",
     "pluralize": "^8.0.0",
