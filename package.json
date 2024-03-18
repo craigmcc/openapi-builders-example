@@ -34,7 +34,7 @@
     "@types/node": "^20.11.24",
     "@types/swagger-ui-dist": "^3.30.4",
     "ts-node": "^10.9.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.4.2"
   },
   "dependencies": {
     "@craigmcc/openapi-builders": "^3.0.0-alpha.15",
