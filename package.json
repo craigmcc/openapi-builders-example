@@ -41,6 +41,6 @@
     "express": "^4.19.2",
     "node": "^22.1.0",
     "pluralize": "^8.0.0",
-    "swagger-ui-dist": "^5.17.2"
+    "swagger-ui-dist": "^5.17.12"
   }
 }
