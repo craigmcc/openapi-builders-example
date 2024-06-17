@@ -39,7 +39,7 @@
   "dependencies": {
     "@craigmcc/openapi-builders": "^3.0.0-alpha.15",
     "express": "^4.19.2",
-    "node": "^22.1.0",
+    "node": "^22.3.0",
     "pluralize": "^8.0.0",
     "swagger-ui-dist": "^5.17.2"
   }
